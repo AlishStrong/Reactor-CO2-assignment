@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" mlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--for the page-->
+    <link th:href="@{/css/for-index-page.css}" rel="stylesheet" type="text/css"/>
+    <!--for the page-->
+</head>
+<body>
+
+<!--Navigation bar START-->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}">Reactor CO2</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{/countries/abc}">List</a></li>
+                <li><a th:href="@{/countries/region}">Regions</a></li>
+                <li><a th:href="@{/countries/income}">Income</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--Navigation bar END-->
+
+<!--Error message START-->
+<div class="container-fluid bg-1">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h3>Sorry, what?</h3>
+            <p>You tried to access a page,
+                that does not exist. I
+                could not resolve the address
+                and therefore kindly ask
+                to cease any further access
+                request to this page!
+            </p>
+        </div>
+    </div>
+</div>
+<!--Error END-->
+
+<!--Footer START-->
+<footer class="container-fluid bg-4 text-center">
+    <p>Developed By <a href="https://www.linkedin.com/in/alisheraliev/" target="_blank">Alisher Aliev</a></p>
+</footer>
+<!--Footer END-->
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" mlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reactor CO2 assignment implementation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script th:src="@{/canvajs/js/jquery.canvasjs.min.js}" ></script>
+
+    <!--for the page-->
+    <link th:href="@{/css/for-index-page.css}" rel="stylesheet" type="text/css"/>
+    <!--for the page-->
+
+    <!-- For JvectorMap-->
+    <link rel="stylesheet" th:href="@{/jvectormap/css/jquery-jvectormap-2.0.3.css}" type="text/css" media="screen"/>
+    <script th:src="@{/jvectormap/js/jquery-jvectormap-2.0.3.min.js}"></script>
+    <script th:src="@{/jvectormap/js/jquery-jvectormap-world-mill.js}"></script>
+    <!-- For JvectorMap-->
+</head>
+<body>
+<!--Navigation bar START-->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}">Reactor CO2</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{/countries/abc}">List</a></li>
+                <li><a th:href="@{/countries/region}">Regions</a></li>
+                <li><a th:href="@{/countries/income}">Income</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--Navigation bar END-->
+
+<!--Map container START-->
+<div class="container-fluid bg-1 text-center" id="mapContainer">
+    <h3 th:text="'Viewing data from ' + ${selectedYear}" style="margin-bottom: 20px;margin-top: 0px;"></h3>
+    <div id="world-map"></div>
+    <div id="world-map-po"></div>
+    <div style="margin-top: 20px;">
+        <button type="button" class="btn btn-warning" id="targetClick">
+        Switch to population data view
+        </button>
+        <div class="row">
+            <input class="input-element" placeholder="..." id="yearInput" />
+            <button type="button" class="btn btn-warning" id="yearSet">
+                Set a year
+            </button>
+        </div>
+    </div>
+</div>
+<!--Map container END-->
+
+<!--About data and Top5 START-->
+<div class="container-fluid bg-2 text-center">
+    <div class="col-md-5">
+        <h3>Carbon dioxide pollution</h3>
+        <p style="text-align: justify;">CO2 - is arguably agreed to be one of the reasons
+            behind the global warming, that has been rapidly
+            affecting the climate on our planet. Tackling
+            the carbon dioxide pollution can influence the
+            drastic situation and improve the increasingly
+            deteriorating climate of the Earth.</p>
+    </div>
+    <div class="col-md-7">
+        <div id="top-five"></div>
+    </div>
+</div>
+<!--About data and Top5 END-->
+
+<!--Footer START-->
+<footer class="container-fluid bg-4 text-center">
+    <p>Developed By <a href="https://www.linkedin.com/in/alisheraliev/" target="_blank">Alisher Aliev</a></p>
+</footer>
+<!--Footer END-->
+
+<!--JvectorMap and Top5 script START-->
+<script th:inline="javascript">
+    $(function(){
+
+        var obtainedData = [[${jvectorMap}]];
+        var emissionData = {};
+        var populationData = {};
+
+        for(var i = 0; i < obtainedData.length; i++) {
+            if (obtainedData[i].emission > 0) {
+                emissionData[obtainedData[i].bicode+""] = obtainedData[i].emission;
+            }
+
+            if (obtainedData[i].population > 0) {
+                populationData[obtainedData[i].bicode+""] = obtainedData[i].population;
+            }
+
+            /*This code is needed due to the bi- and tri- code marking of sources
+            * Also, sources have different political views: which countries exist, and which do not;
+            * which countries are independent, and which are not.*/
+            if (obtainedData[i].tricode == "MAR") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["EH"] = obtainedData[i].emission;
+                }
+                populationData["EH"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "SOM") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["XS"] = obtainedData[i].emission;
+                }
+                populationData["XS"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "CHN") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["TW"] = obtainedData[i].emission;
+                }
+                populationData["TW"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "FRA") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["TF"] = obtainedData[i].emission;
+                }
+                populationData["TF"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "GBR") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["FK"] = obtainedData[i].emission;
+                }
+                populationData["FK"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "ISR") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["PS"] = obtainedData[i].emission;
+                }
+                populationData["PS"] = obtainedData[i].population;
+            }
+            if (obtainedData[i].tricode == "CYP") {
+                if (obtainedData[i].emission > 0) {
+                    emissionData["XC"] = obtainedData[i].emission;
+                }
+                populationData["XC"] = obtainedData[i].population;
+            }
+        }
+
+        $('#world-map').vectorMap({
+            map: 'world_mill',
+            backgroundColor: '#1ABC9C',
+            zoomOnScroll: false,
+            onRegionClick: function (e, code) {
+                var toReturn = "";
+                obtainedData.filter(function (value) {
+                    if (value.bicode == code) {
+                        toReturn = value.tricode;
+                    }
+                });
+                location.href = "country/" + toReturn;
+            },
+            series: {
+                regions: [{
+                    values: emissionData,
+                    scale: ['#F46036', '#D7263D'],
+                    normalizeFunction: 'polynomial'
+                }]
+            },
+            onRegionTipShow: function(e, el, code){
+                if (emissionData[code] != null) {
+                    el.html(el.html()+ ' (CO2 emissions - '+emissionData[code]+' kilotonnes)');
+                } else {
+                    el.html(el.html()+ ' (CO2 emission data is not available');
+                }
+
+            }
+        });
+        $('#world-map-po').vectorMap({
+            map: 'world_mill',
+            backgroundColor: '#2E294E',
+            zoomOnScroll: false,
+            onRegionClick: function (e, code) {
+                var toReturn = "";
+                obtainedData.filter(function (value) {
+                    if (value.bicode == code) {
+                        toReturn = value.tricode;
+                    }
+                });
+                location.href = "country/" + toReturn;
+            },
+            series: {
+                regions: [{
+                    values: populationData,
+                    scale: ['#C5D86D', '#697C12'],
+                    normalizeFunction: 'polynomial'
+                }]
+            },
+            onRegionTipShow: function(e, el, code){
+                el.html(el.html()+ ' (Population - '+populationData[code]+' people)');
+            }
+        });
+
+        $('#world-map-po').hide();
+        var poHidden = true;
+
+        var topFiveData = [[${topFivePollutors}]];
+        var forTopFiveChart = [];
+        for (var i = 1; i <= topFiveData.length; i++) {
+            data = {y: topFiveData[i-1].emission, label: topFiveData[i-1].code, country: topFiveData[i-1].name};
+            forTopFiveChart.push(data);
+        }
+        $("#top-five").CanvasJSChart({
+            animationEnabled: true,
+            backgroundColor: "#474e5d",
+            title: {
+                text: "5 most polluting countries since 2000",
+                fontFamily: "Montserrat",
+                fontSize: 24,
+                fontColor: "#ffffff"
+            },
+            toolTip:{
+                content: "{country}: {y} kt"
+            },
+            axisY: {
+                title: "CO2 emissions",
+                includeZero: false,
+                titleFontFamily: "Montserrat",
+                titleFontSize: 20,
+                titleFontColor: "#ffffff",
+                lineColor: "#ffffff",
+                labelFontColor: "#ffffff",
+                tickColor: "#ffffff"
+            },
+            axisX: {
+                labelFontColor: "#ffffff",
+                lineColor: "#ffffff",
+                tickColor: "#ffffff",
+                labelFormatter: function ( e ) {
+                    return e.label;
+                }
+            },
+            data: [{
+                type: "column",
+                yValueFormatString: "#,##0.0#"%"",
+                dataPoints: forTopFiveChart
+            }]
+        });
+
+        $('#targetClick').click(function() {
+            if (poHidden) {
+                $('#world-map').hide();
+                $('#world-map-po').show();
+                $('#mapContainer').css('background-color', '#2E294E');
+                $('#targetClick').text('Switch to CO2 emission data view');
+                poHidden = false;
+            } else {
+                $('#world-map-po').hide();
+                $('#world-map').show();
+                $('#mapContainer').css('background-color', '#1abc9c');
+                $('#targetClick').text('Switch to population data view');
+                poHidden = true;
+            }
+        });
+
+        $('#yearSet').click(function () {
+            var yearToSet = $('#yearInput').val();
+            if (/^\d+$/.test(yearToSet) && yearToSet >= 1960 && yearToSet <= 2017) {
+                location.href = "/" + yearToSet;
+            } else {
+                alert("Your input is not valid. Please input a year within 1960-2017 range. Your input was - " + yearToSet);
+            }
+
+        })
+    });
+</script>
+<!--JvectorMap and Top5 Script END-->
+</body>
+</html>

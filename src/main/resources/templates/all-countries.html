@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" mlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="'All countries: ' + ${pageTitle}">All countries page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--for the page-->
+    <link th:href="@{/css/for-index-page.css}" rel="stylesheet" type="text/css"/>
+    <!--for the page-->
+</head>
+<body>
+<!--Navigation bar START-->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}">Reactor CO2</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{/countries/abc}">List</a></li>
+                <li><a th:href="@{/countries/region}">Regions</a></li>
+                <li><a th:href="@{/countries/income}">Income</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--Navigation bar END-->
+
+<!--Alphabet list START-->
+<div th:if="${pageTitle.equals('Alphabet')}" class="container-fluid bg-1 text-center">
+    <div class="row col-md-10 col-md-offset-1">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2">List of countries in alphabetic order</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${abcMap}">
+                <td th:text="${entry.key}">Key value</td>
+                <td style="text-align: left">
+                    <a class="btn btn-warning" style="margin-bottom: 5px; margin-left: 5px;"
+                       th:each="country : ${entry.getValue()}"
+                       th:href="@{'/country/' + ${country.code.toLowerCase()}}">
+                        <span th:text="${country.name}"/>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Alphabet list END-->
+
+<!--Region list START-->
+<div th:if="${pageTitle.equals('Regions')}" class="container-fluid bg-1 text-center">
+    <div class="row col-md-10 col-md-offset-1">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2">List of countries by region</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${regionMap}">
+                <td th:text="${entry.key}">Key value</td>
+                <td style="text-align: left">
+                    <a class="btn btn-warning" style="margin-bottom: 5px; margin-left: 5px;"
+                       th:each="country : ${entry.getValue()}"
+                       th:href="@{'/country/' + ${country.code.toLowerCase()}}">
+                        <span th:text="${country.name}"/>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Region list END-->
+
+<!--Income level list START-->
+<div th:if="${pageTitle.equals('Income level')}" class="container-fluid bg-1 text-center">
+    <div class="row col-md-10 col-md-offset-1">
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2">List of countries by income level</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${incomeLevelMap}">
+                <td th:text="${entry.key}">Key value</td>
+                <td style="text-align: left">
+                    <a class="btn btn-warning" style="margin-bottom: 5px; margin-left: 5px;"
+                       th:each="country : ${entry.getValue()}"
+                       th:href="@{'/country/' + ${country.code.toLowerCase()}}">
+                        <span th:text="${country.name}"/>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!--Income level list END-->
+
+<!--Footer START-->
+<footer class="container-fluid bg-4 text-center">
+    <p>Developed By <a href="https://www.linkedin.com/in/alisheraliev/" target="_blank">Alisher Aliev</a></p>
+</footer>
+<!--Footer END-->
+</body>
+</html>

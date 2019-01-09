@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" mlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${country.name} + ' page'">Country page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script th:src="@{/canvajs/js/jquery.canvasjs.min.js}" ></script>
+
+    <!--for the page-->
+    <link th:href="@{/css/for-index-page.css}" rel="stylesheet" type="text/css"/>
+    <!--for the page-->
+</head>
+<body>
+<!--Navigation bar START-->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/}">Reactor CO2</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{/countries/abc}">List</a></li>
+                <li><a th:href="@{/countries/region}">Regions</a></li>
+                <li><a th:href="@{/countries/income}">Income</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--Navigation bar END-->
+
+<!--Country Data START-->
+<div class="container-fluid bg-1 text-center">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th class="text-center" colspan="2" th:text="'Data about ' + ${country.name}">Info about the country</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-right" style="border-right: 1px solid #ddd;">Country code: &nbsp</td>
+                    <td th:text="${country.code}" style="text-align: left">Country code</td>
+                </tr>
+                <tr>
+                    <td class="text-right" style="border-right: 1px solid #ddd;">Country region: &nbsp</td>
+                    <td th:text="${country.region}" style="text-align: left">Country region</td>
+                </tr>
+                <tr>
+                    <td class="text-right" style="border-right: 1px solid #ddd;">Country income level: &nbsp</td>
+                    <td th:text="${country.incomelevel}" style="text-align: left">Country income level</td>
+                </tr>
+                <tr th:if="${country.comments != null}">
+                    <td class="text-right" style="border-right: 1px solid #ddd;">Additional data: &nbsp</td>
+                    <td th:text="${country.comments}" style="text-align: left">Additional data</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--Country Data END-->
+
+<!--Country Data charts START-->
+<div class="container-fluid bg-3 text-center">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="populationChartContainer" style="height: 250px; width: 100%;"></div>
+        </div>
+        <div class="col-md-6">
+            <div id="emissionChartContainer" style="height: 250px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+<!--Country Data charts END-->
+
+<!--Emission per Population chart START-->
+<div class="container-fluid bg-2 text-center">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="popEmChartContainer" style="height: 300px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+<!--Emission per Population chart END-->
+
+<!--Footer START-->
+<footer class="container-fluid bg-4 text-center">
+    <p>Developed By <a href="https://www.linkedin.com/in/alisheraliev/" target="_blank">Alisher Aliev</a></p>
+</footer>
+<!--Footer END-->
+
+<!--CanvaJS START-->
+<script th:inline="javascript">
+    window.onload = function () {
+
+        var PopEm = [[${popem}]];
+
+        var minimumYear = new Date(PopEm[0].id.year);
+        var maximumYear = new Date(PopEm[PopEm.length-1].id.year);
+
+        var minEmYear = 0;
+        var maxEmYear = 0;
+
+        var populationData = [];
+        var emissionData = [];
+        var emPerPop = [];
+        for (var i = 0; i < PopEm.length; i++) {
+            var year = PopEm[i].id.year;
+            var date = new Date(year);
+            var populationObj = {
+                x: date,
+                y: PopEm[i].population,
+                label: PopEm[i].id.year
+            };
+            if (PopEm[i].emission != 0) {
+                if (minEmYear === 0) {
+                    minEmYear = PopEm[i].id.year;
+                }
+                maxEmYear = PopEm[i].id.year;
+                var emissionObj = {
+                    x: date,
+                    y: PopEm[i].emission,
+                    label: PopEm[i].id.year
+                }
+                var emPerPopObj = {
+                    x: date,
+                    y: PopEm[i].emission * 1000 / PopEm[i].population,
+                    label: PopEm[i].id.year
+                }
+                emPerPop.push(emPerPopObj);
+                emissionData.push(emissionObj);
+            }
+            populationData.push(populationObj);
+        }
+
+        var populationChart = new CanvasJS.Chart("populationChartContainer", {
+            animationEnabled: true,
+            title: {
+                text: "Population of " + [[${country.name}]]
+            },
+            axisX: {
+                minimum: minimumYear,
+                maximum: maximumYear,
+                valueFormatString: "YYYY"
+            },
+            axisY: {
+                labelFontColor: "black",
+                lineColor: "black",
+                tickColor: "black",
+                title: "Number of people"
+            },
+            data: [{
+                indexLabelFontColor: "darkSlateGray",
+                name: "views",
+                type: "area",
+                color: "darkgreen",
+                yValueFormatString: "#,##0.##",
+                dataPoints: populationData
+            }]
+        });
+        populationChart.render();
+
+        var emissionChart = new CanvasJS.Chart("emissionChartContainer", {
+            animationEnabled: true,
+            title: {
+                text: "CO2 emission of " + [[${country.name}]]
+            },
+            axisX: {
+                labelFontColor: "black",
+                lineColor: "black",
+                tickColor: "black",
+                minimum: minEmYear,
+                maximum: maxEmYear,
+                valueFormatString: "YYYY"
+            },
+            axisY: {
+                title: "Emissions in kilotonnes",
+                titleFontColor: "black",
+                lineColor: "black",
+                labelFontColor: "black",
+                tickColor: "black"
+            },
+            data: [{
+                indexLabelFontColor: "darkSlateGray",
+                name: "views",
+                type: "area",
+                color: "darkred",
+                yValueFormatString: "#,##0.##",
+                dataPoints: emissionData
+            }]
+        });
+        emissionChart.render();
+
+        var emPerPopChart = new CanvasJS.Chart("popEmChartContainer", {
+            animationEnabled: true,
+            backgroundColor: "#474e5d",
+            title: {
+                text: "CO2 emission of " + [[${country.name}]] + " per population capita",
+                fontFamily: "Montserrat",
+                fontSize: 24,
+                fontColor: "#ffffff"
+            },
+            axisX: {
+                minimum: minEmYear,
+                maximum: maxEmYear,
+                valueFormatString: "YYYY",
+                labelFontColor: "#ffffff",
+                lineColor: "#ffffff",
+                tickColor: "#ffffff"
+            },
+            axisY: {
+                title: "Emissions in tonnes",
+                titleFontFamily: "Montserrat",
+                titleFontSize: 20,
+                titleFontColor: "#ffffff",
+                lineColor: "#ffffff",
+                labelFontColor: "#ffffff",
+                tickColor: "#ffffff"
+            },
+            data: [{
+                indexLabelFontColor: "darkSlateGray",
+                name: "views",
+                type: "area",
+                color: "rgb(79, 129, 188)",
+                yValueFormatString: "#,##0.####",
+                dataPoints: emPerPop
+            }]
+        });
+        emPerPopChart.render();
+    }
+</script>
+<!--CanvaJS END-->
+</body>
+</html>
